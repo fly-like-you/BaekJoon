@@ -4,7 +4,7 @@ N = int(sys.stdin.readline())
 graph = []
 
 graph = [list(map(int, input())) for _ in range(N)]
-visited = [[False for _ in range(N)] for _ in range(N)]
+
 dx = [1, -1, 0, 0]
 dy = [0, 0, 1, -1]
 def bfs(n, x0, y0):  # 가로 세로 n칸 만큼 bfs x,y는 왼쪽 위 첫번째 좌표
