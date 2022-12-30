@@ -1,14 +1,10 @@
-
-
-import sys
-
-input = sys.stdin.readline
-
 N = int(input())
+array = []
+for i in range(N):
+    array.append(list(map(int, input().split())))
 ans = [0,0,0]
 
 
-array = [list(map(int, input().strip().split(' '))) for _ in range(N)]
 def checksum(row, col, num):
     start = array[row][col]
     for i in range(row, row + num):
@@ -18,7 +14,9 @@ def checksum(row, col, num):
     return True
 
 def divide(row, col, num):
-    if checksum(row, col, num):
+    if num == 1:
+        ans[array[row][col]] += 1
+    elif checksum(row, col, num):
         ans[array[row][col]] += 1
     else:
         size = num // 3
