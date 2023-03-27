@@ -1,79 +1,169 @@
 import sys
+
 input = sys.stdin.readline
 
+# T = int(input())
 
-class Heap:
+# command = []
+# for _ in range(T):
+#     k = int(input())
+#     for _ in range(k):
+#         pass
+
+
+class PriorityQueue:
+
     def __init__(self):
-        self.heap = []
-        self.heap.append(None)
-    def isLeaf(self, idx):
-        left_node_idx = idx * 2
-        if len(self.heap) <= left_node_idx: # 둘다 없을 때
-            return True
+        self.min_heap = MinHeap()
+        self.max_heap = MaxHeap()
+
+    def delete(self, flag):
+        if flag == 1:
+            max_val = self.max_heap.pop()
+            self.min_heap.delete(max_val)
         else:
-            return False
+            min_val = self.min_heap.pop()
+            self.max_heap.delete(min_val)
 
-    def check_swap_up(self, idx):
-        if idx <= 1:
-            return False
-        parent_idx = idx // 2
-
-        if self.heap[idx] > self.heap[parent_idx]:
-            return True
-        else:
-            return False
-    def add(self, target):
-        idx = len(self.heap)
-        self.heap.append(target)
-        while self.check_swap_up(idx):
-
-            self.heap[idx], self.heap[idx // 2] = self.heap[idx // 2], self.heap[idx]
-            idx //= 2
+    def insert(self, num):
+        self.min_heap.insert(num)
+        self.max_heap.insert(num)
 
 
-    def delete(self):
-        if len(self.heap) == 1:
+class MinHeap:
+
+    def __init__(self):
+        self.heap = HeapList()
+
+    def delete(self, num):  # num을 힙에서 찾아서 삭제
+        if self.__is_heap_empty():
+            return
+        idx = self.heap.get_value_idx(num)
+        self.heap.swap(idx, -1)
+        self.heap.pop()
+        self.__top_down_heapify(idx)
+
+    def pop(self):  # 최솟값을 삭제하는 연산
+        if self.__is_heap_empty():
             print(0)
             return
-        print(self.heap[1] * -1)
-        self.heap[-1], self.heap[1] = self.heap[1], self.heap[-1]
-        del self.heap[-1]
-        if len(self.heap) == 1:
-            return
-        idx = 1
-        while not self.isLeaf(idx): # 자식 노드가 존재하지 않을 때 까지 반복
-            left_idx = idx * 2
-            right_idx = idx * 2 + 1
-            try:
-                val = self.heap[right_idx]
-            except:
-                val = -(2**31 + 1)
 
-            if self.heap[left_idx] >= val: # 오른쪽 왼쪽 비교
-                if self.heap[left_idx] > self.heap[idx]:
-                    self.heap[left_idx], self.heap[idx] = self.heap[idx], self.heap[left_idx]  # 자식이 큰경우 변경
-                    idx *= 2
-                else:
-                    break
-            else: # 오른쪽 노드가 큰경우
-
-                if self.heap[right_idx] > self.heap[idx]:
-                    self.heap[right_idx], self.heap[idx] = self.heap[idx], self.heap[right_idx]  # 자식이 큰경우 변경
-                    idx = idx * 2 + 1
-                else:
-                    break
+        self.heap.swap(1, -1)  # 루트와 단말 교환
+        min_val = self.heap.pop()
+        self.__top_down_heapify(1)
 
 
+        return min_val
 
-heap = Heap()
+    def insert(self, num):  # 삽입 연산
+        self.heap.append(num)
+        last_node_idx = self.heap.get_heap_size()  # 힙이 비어있으면 0
+        self.__bottom_up_heapify(last_node_idx)
+
+    def __top_down_heapify(self, idx):
+        left_child_idx = self.heap.get_left_child_idx(idx)
+        right_child_idx = self.heap.get_right_child_idx(idx)
+        smallest = idx
+
+        if left_child_idx <= self.heap.get_heap_size() and self.heap.get_value(left_child_idx) < self.heap.get_value(idx):
+            smallest = left_child_idx
+
+        if right_child_idx <= self.heap.get_heap_size() and self.heap.get_value(right_child_idx) < self.heap.get_value(smallest):
+            smallest = right_child_idx
+
+        if smallest != idx:
+            self.heap.swap(idx, smallest)
+            self.__top_down_heapify(smallest)
+
+    def __bottom_up_heapify(self, idx):
+        parent_idx = self.heap.get_parent_idx(idx)
+        if parent_idx > 0 and self.heap.get_value(idx) < self.heap.get_value(parent_idx):
+            self.heap.swap(idx, parent_idx)
+            self.__bottom_up_heapify(parent_idx)
+
+    def __is_heap_empty(self):
+        if self.heap.is_empty():
+            return True
+        else:
+            return False
+
+
+class MaxHeap:
+
+    def __init__(self):
+        self.heap = HeapList()
+
+    def delete(self, num):  # num을 힙에서 찾아서 삭제
+        pass
+
+    def pop(self):  # 최댓값을 삭제하는 연산
+        pass
+
+    def insert(self, num):  # 삽입 연산
+        pass
+
+    def __heapify(self):
+        pass
+
+    def __is_heap_empty(self):
+        if self.heap.is_empty():
+            return True
+        else:
+            return False
+
+
+class HeapList:
+    def __init__(self):
+        self.li = [0]
+
+    def print_heap(self):
+        print(self.li)
+
+    def is_empty(self):
+        if len(self.li) == 1:
+            return True
+        else:
+            return False
+
+    def swap(self, idx1, idx2):
+        self.li[idx1], self.li[idx2] = self.li[idx2], self.li[idx1]
+
+    def pop(self):
+        ret = self.li[-1]
+        del self.li[-1]
+        return ret
+
+    def append(self, num):
+        self.li.append(num)
+
+    def get_heap_size(self):
+        return len(self.li) - 1
+
+    def get_value_idx(self, value):
+        return self.li.index(value)
+
+    def get_value(self, idx):
+        return self.li[idx]
+
+    def get_right_child_idx(self, idx):
+        return idx * 2
+
+    def get_left_child_idx(self, idx):
+        return idx * 2 + 1
+
+    def get_parent_idx(self, idx):
+        return idx // 2
+
+min_heap = MinHeap()
+
 N = int(input())
 for _ in range(N):
     cmd = int(input())
-
     if cmd == 0:
-        heap.delete()
+        a = min_heap.pop()
+        if a is not None:
+            print(a)
     elif cmd == -1:
-        print(heap.heap)
+        print(min_heap.heap)
     else:
-        heap.add(cmd * -1)
-
+        min_heap.insert(cmd)
