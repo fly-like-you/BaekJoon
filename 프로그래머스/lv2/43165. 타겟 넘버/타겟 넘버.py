@@ -14,7 +14,6 @@ def dfs(start, index, target, now):
         return
 
     for i in (start[index], start[index] * -1):
-        if index < len(start):
-            dfs(start, index + 1, target, now + i)
+        dfs(start, index + 1, target, now + i)
             
         
