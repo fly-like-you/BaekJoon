@@ -1,33 +1,40 @@
 import sys
+
 input = sys.stdin.readline
 
-def solution(CMD, length, arr):
-    r_state = 1
-    arr = arr.strip('[]\n').split(',')
-    a, b = 0, length
-    
-    for i in CMD:
-        if i == 'R':
-            r_state *= -1
-        elif i == 'D':
-            if r_state == 1:
-                a+=1
-            elif r_state == -1:
-                b-=1
-            if a > b:
-                return 'error'
-    
-    if r_state == 1:
-        return f'[{",".join(arr[a:b])}]'
-    elif r_state == -1:
-        if a == 0:
-            return f'[{",".join(arr[b-1::-1])}]'
-        else:
-            return f'[{",".join(arr[b-1:a-1:-1])}]'
-
 T = int(input())
-for i in range(T):
-    CMD = input()
+
+for _ in range(T):
+    CMDs = list(input().rstrip())
     length = int(input())
-    arr = input()
-    print(solution(CMD, length, arr))
+    arr = input().strip("[]\n").split(',')
+
+
+    reverse_flag = 1
+    # -1 회전 1 회전 안함
+    front = 0
+    for cmd in CMDs:
+        if cmd == 'R':
+            reverse_flag *= -1
+
+        elif cmd == 'D':
+            if reverse_flag == 1:
+                front += 1
+            elif reverse_flag == -1:
+                length -= 1
+
+    if length >= front:
+
+        if reverse_flag == 1:
+            print("[" + ",".join(arr[front:length]) + "]")
+        else:
+            if front == 0:
+                print(f'[{",".join(arr[length - 1::-1])}]')
+            else:
+                print(f'[{",".join(arr[length - 1:front - 1:-1])}]')
+    else:
+        print('error')
+
+
+
+
