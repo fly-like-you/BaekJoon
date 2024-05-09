@@ -1,4 +1,8 @@
 from collections import deque
+import sys
+
+input = sys.stdin.readline
+
 T = int(input())
 dx = (0, 0, 1, -1)
 dy = (1, -1, 0, 0)
