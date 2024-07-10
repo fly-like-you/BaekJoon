@@ -22,7 +22,7 @@ public class Main {
         int roomCount = 0;
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 2; j++) {
-                double room = Math.ceil((double) arr[i][j] / 2.0);
+                double room = Math.ceil((double) arr[i][j] / (double) K);
                 roomCount += room;
             }
         }
