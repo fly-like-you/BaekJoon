@@ -9,24 +9,29 @@ public class Main {
     static int[] dwarfs;
     static boolean[] visited;
     static int N;
+    static int maxDepth;
     static StringBuilder sb;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = 9;
+        maxDepth = 7;
+
         dwarfs = new int[N];
         visited = new boolean[N];
 
         for (int i = 0; i < N; i++) {
             dwarfs[i] = Integer.parseInt(br.readLine());
         }
-        Arrays.sort(dwarfs);
 //        dwarfs = new int[]{20, 7, 23, 19, 10, 15, 25, 8, 13};
-        dfs(0);
+//        dwarfs = new int[]{20, 7, 23, 19, 10};
+        Arrays.sort(dwarfs);
+
+        dfs(0, 0);
     }
 
-    private static void dfs(int depth) {
+    private static void dfs(int depth, int k) {
 
-        if (depth == 7) {
+        if (depth == maxDepth) {
 //            System.out.println(Arrays.toString(visited));
             sb = new StringBuilder();
             int sum = 0;
@@ -43,10 +48,10 @@ public class Main {
 
             }
         } else {
-            for (int i = depth; i < N; i++) {
+            for (int i = k; i < N; i++) {
                 if (!visited[i]) {
                     visited[i] = true;
-                    dfs(depth + 1);
+                    dfs(depth + 1, i);
                     visited[i] = false;
                 }
             }
