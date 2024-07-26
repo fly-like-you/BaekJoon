@@ -40,6 +40,7 @@ public class Main {
             }
         }
 
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
@@ -57,10 +58,10 @@ public class Main {
             } else {
                 sum += matrix[x2][y2] - matrix[x2][y1 - 1] - matrix[x1 - 1][y2] + matrix[x1 - 1][y1 - 1];
             }
+            sb.append(sum + "\n");
 
-            System.out.println(sum);
         }
-
+        System.out.println(sb);
 
     }
 
