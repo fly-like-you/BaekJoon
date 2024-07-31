@@ -1,123 +1,112 @@
-import java.awt.Point;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int N; // 배열의 크기
-    static int R; // 놓을 수 있는 바이러스 수
-    static int C; // 총 바이러스 수
-    static int[][] arr;
-    static int[][] copy;
-    static int blank;
-    static int minTime;
-    static boolean flag;
+	static int N, M, blank, minTime;
+	static boolean flag;
+	static int[][] map, copy;
+	static ArrayList<Point> virus;
+	static boolean[] isSelected;
+	static int[] dy = { -1, 1, 0, 0 };
+	static int[] dx = { 0, 0, -1, 1 };
 
-    static ArrayList<Point> virus;
-    static boolean[] selected;
+	static class Point {
+		int y, x, t;
 
-    public static void main(String[] args) throws IOException {
+		Point(int y, int x, int t) {
+			this.y = y;
+			this.x = x;
+			this.t = t;
+		}
+	}
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        R = Integer.parseInt(st.nextToken());
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 
-        arr = new int[N][N];
-        copy = new int[N][N];
-        virus = new ArrayList<>();
-        minTime = Integer.MAX_VALUE;
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 
-        for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < N; j++) {
-                int elem = Integer.parseInt(st.nextToken());
-                arr[i][j] = copy[i][j] = elem;
-                if (elem == 0) {
-                    blank++;
-                }
-                if (elem == 2) {
-                    virus.add(new Point(i, j));
-                    C++;
-                }
-            }
-        }
-        blank += C - R;
-        selected = new boolean[C];
-        combination(0, R);
-        System.out.println(flag ? minTime-1 : -1);
-    }
+		map = new int[N][N];
+		copy = new int[N][N];
+		virus = new ArrayList<>();
 
-    static Queue<Point> q = new LinkedList<>();
-    static int[] dx = {1, -1 , 0, 0};
-    static int[] dy = {0, 0, 1, -1};
+		for (int i = 0; i < N; i++) {
+			st = new StringTokenizer(br.readLine());
+			for (int j = 0; j < N; j++) {
+				map[i][j] = copy[i][j] = Integer.parseInt(st.nextToken());
+				if (map[i][j] == 0)
+					blank++;
+				else if (map[i][j] == 2)
+					virus.add(new Point(i, j, 0));
+			}
+		}
 
-    private static void bfs() {
-        int cnt = 0;
-        copy();
-        for (int i = 0; i < C; i++) {
-            Point p = virus.get(i);
-            if (selected[i]) {
-                q.add(p);
-                arr[p.x][p.y] = 1;
-            } else {
-                arr[p.x][p.y] = 0;
-            }
-        }
+		isSelected = new boolean[virus.size()];
+		blank += (virus.size() - M);
+		minTime = Integer.MAX_VALUE;
+		comb(0, 0);
+		System.out.println(flag ? minTime : -1);
+	}
 
-        int time = 1;
-        while(!q.isEmpty()) {
-            Point p = q.poll();
+	static void comb(int start, int cnt) {
+		if (cnt == M) {
+			bfs();
+			return;
+		}
 
-            for (int i = 0; i < dx.length; i++) {
-                int nx = p.x + dx[i];
-                int ny = p.y + dy[i];
+		for (int i = start; i < virus.size(); i++) {
+			isSelected[i] = true;
+			comb(i + 1, cnt + 1);
+			isSelected[i] = false;
+		}
+	}
 
-                if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue;
-                if (arr[nx][ny] == 0) {
-                    arr[nx][ny] = arr[p.x][p.y] + 1;
-                    time = Math.max(arr[nx][ny], time);
-                    q.add(new Point(nx, ny));
-                    cnt++;
-                }
-            }
-        }
-        if (cnt == blank) {
-            minTime = Math.min(time, minTime);
-            flag = true;
-        }
+	static void bfs() {
+		copy();
+		int cnt = blank;
 
-    }
+		Queue<Point> q = new ArrayDeque<>();
+		for (int i = 0; i < virus.size(); i++) {
+			Point p = virus.get(i);
+			if (isSelected[i]) {
+				q.offer(p);
+				map[p.y][p.x] = -1;
+			} else {
+				map[p.y][p.x] = 0;
+			}
 
-    private static void combination(int start, int end) {
-        if (end == 0) {
-            bfs();
-        }
+		}
 
-        for (int i = start; i < virus.size(); i++) {
-            if (!selected[i]) {
-                selected[i] = true;
-                combination(start + 1, end - 1);
-                selected[i] = false;
-            }
-        }
-    }
+		int time = 0;
+		while (!q.isEmpty()) {
+			Point p = q.poll();
 
-    static class Point {
-        int x; int y;
-        Point(int x, int y) {
-            this.x = x; this.y = y;
-        }
-    }
+			for (int d = 0; d < 4; d++) {
+				int ny = p.y + dy[d];
+				int nx = p.x + dx[d];
+				if (ny >= 0 && ny < N && nx >= 0 && nx < N && map[ny][nx] == 0) {
+					map[ny][nx] = p.t + 1;
+					q.offer(new Point(ny, nx, p.t + 1));
+					cnt--;
+				}
+			}
+			if (time != p.t)
+				time = p.t;
+		}
+		if (cnt == 0) {
+			flag = true;
+			minTime = Math.min(minTime, time);
+		}
+	}
 
-    static void copy() {
-        for (int i = 0; i < N; i++) {
-            System.arraycopy(copy[i], 0, arr[i], 0, N);
-        }
-    }
-
+	static void copy() {
+		for (int i = 0; i < N; i++) {
+			System.arraycopy(copy[i], 0, map[i], 0, N);
+		}
+	}
 }
