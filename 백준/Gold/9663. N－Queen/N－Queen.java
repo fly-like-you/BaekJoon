@@ -1,62 +1,57 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Main {
     static int N;
-    static int[][] board;
-    static int cnt = 0;
-
+    static int answer;
+    static int[][] chess;
+    static int dx[] = {0, 0, 1, -1, 1, 1, -1, -1};
+    static int dy[] = {1, -1, 0, 0, 1, -1, 1, -1};
     public static void main(String[] args) throws IOException {
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         N = Integer.parseInt(br.readLine());
-        board = new int[N][N];
 
-        back_tracking(0);
-
-        System.out.println(cnt);
+        chess = new int[N][N];
+        solution(0, 0);
+        System.out.println(answer);
     }
 
-    static void back_tracking(int depth) {
+    private static void solution(int x, int depth) {
         if (depth == N) {
-            cnt++;
-            return;
-        }
-
-        for (int i = 0; i < N; i++) {
-            if (board[depth][i] != 0) {
-                continue;
+            answer++;
+        } else {
+            for (int j = 0; j < N; j++) {
+                if (chess[depth][j] > 0)
+                    continue;
+                // 둔 곳에 움직일 수 있는 곳에 true 처리
+                queen(depth, j, 1);
+                solution(j + 1, depth + 1);
+                queen(depth, j, -1);
             }
-
-            ChessUpdate(depth, i, 1);
-            back_tracking(depth + 1);
-            ChessUpdate(depth, i, -1);
         }
     }
 
-    static void ChessUpdate(int row, int col, int option) {
-        for (int i = 0; i < N; i++) {
-            board[i][col] += option;
-            board[row][col] += option;
+
+    private static void queen(int x, int y, int flag) {
+        chess[x][y] += flag;
+
+
+        for (int i = 0; i < dx.length; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            while (true) {
+                if (nx < 0 || nx >= N || ny < 0 || ny >= N)
+                    break;
+
+                chess[nx][ny] += flag;
+                nx = nx + dx[i];
+                ny = ny + dy[i];
+            }
         }
 
-        for (int x = row, y = col; isOnBoard(x, y); x++, y++) {
-            board[x][y] += option;
-        }
-        for (int x = row, y = col; isOnBoard(x, y); x++, y--) {
-            board[x][y] += option;
-        }
-        for (int x = row, y = col; isOnBoard(x, y); x--, y++) {
-            board[x][y] += option;
-        }
-        for (int x = row, y = col; isOnBoard(x, y); x--, y--) {
-            board[x][y] += option;
-        }
-
-        board[row][col] -= option * 5;
     }
 
-    static boolean isOnBoard(int row, int col) {
-        return row >= 0 && row < N && col >= 0 && col < N ? true : false;
-    }
 }
