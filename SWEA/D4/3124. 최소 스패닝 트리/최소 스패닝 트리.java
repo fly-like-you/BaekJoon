@@ -1,104 +1,91 @@
-/**
- * 메모리 : 195,712
- * 실행 시간 :  6698 
- */
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Solution {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringBuilder sb = new StringBuilder();
+    static StringTokenizer st;
+    static int T, V, E;
+    static Node[] adjList;
 
-/*
-1
-3 3
-1 2 1
-2 3 2
-1 3 3
-*/
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static StringBuilder sb = new StringBuilder();
-	static StringTokenizer st;
-	static int T, V, E;
-	static Edge[] edges;
-	static int[] parents;
+    public static void main(String[] args) throws IOException {
+        T = Integer.parseInt(br.readLine());
 
-	public static void main(String[] args) throws IOException {
-		T = Integer.parseInt(br.readLine());
-		for (int t = 1; t <= T; t++) {
-			long weightSum = 0;
-			st = new StringTokenizer(br.readLine());
-			V = Integer.parseInt(st.nextToken());
-			E = Integer.parseInt(st.nextToken());
-			edges = new Edge[E];
+        for (int t = 1; t <= T; t++) {
+            st = new StringTokenizer(br.readLine());
 
-			for (int i = 0; i < E; i++) {
-				st = new StringTokenizer(br.readLine());
-				int u = Integer.parseInt(st.nextToken());
-				int v = Integer.parseInt(st.nextToken());
-				int w = Integer.parseInt(st.nextToken());
+            V = Integer.parseInt(st.nextToken());
+            E = Integer.parseInt(st.nextToken());
 
-				edges[i] = new Edge(u, v, w);
-			}
+            adjList = new Node[V + 1];
 
-			// 정점, 정점, 가중치 입력
-			// 단독 트리 생성
-			makeSet();
-			// 가중치를 오름차순으로 간선 정렬
-			Arrays.sort(edges);
-			// 이어진 간선이 V-1개가 될 때까지 UnionFind
-			int cnt = 0;
-			for (int i = 0; i < E; i++) {
-				int u = edges[i].u;
-				int v = edges[i].v;
-				int w = edges[i].w;
-				if (union(u, v)) {
-					// 합치기 성공
-					weightSum += w;
-					if (++cnt == V - 1) {
-						break;
-					}
-				}
-			}
+            for (int i = 0; i < E; i++) {
+                st = new StringTokenizer(br.readLine());
+                int u = Integer.parseInt(st.nextToken());
+                int v = Integer.parseInt(st.nextToken());
+                int w = Integer.parseInt(st.nextToken());
 
-			sb.append("#").append(t).append(" ").append(weightSum).append("\n");
-		}
-		System.out.println(sb);
-	}
+                adjList[u] = new Node(v, w, adjList[u]);
+                adjList[v] = new Node(u, w, adjList[v]);
+            }
 
-	private static void makeSet() {
-		parents = new int[V+1];
-		for (int i = 0; i <= V; i++) {
-			parents[i] = -1;
-		}
-	}
 
-	private static boolean union(int u, int v) {
-		int uRoot = findSet(u);
-		int vRoot = findSet(v);
-		if (uRoot == vRoot) return false;
+            sb.append("#").append(t).append(" ").append(PRIM()).append("\n");
+        }
+        System.out.println(sb);
+    }
 
-		parents[uRoot] += parents[vRoot];
-		parents[vRoot] = uRoot;
+    static long PRIM() {
+        // 트리의 주변 정점들을 검사하여
+        // 가중치가 가장 낮은 정점을 찾고
+        // 해당 정점을 이어붙인다
+        // 정점을 붙이고 해당 정점으로부터 인접한 정점들간의 가중치를 검사해서 가중치 배열을 업데이트
+        boolean[] visited = new boolean[V + 1];
+        PriorityQueue<Vertex> pq = new PriorityQueue<>((o1, o2) -> o1.w - o2.w);
+        pq.offer(new Vertex(1, 0));
 
-		return true;
-	}
+        long result = 0;
+        int cnt = 0;
+        while (!pq.isEmpty()) {
+            Vertex cur = pq.poll();
+            if (visited[cur.no]) continue;
 
-	private static int findSet(int u) {
-		if (parents[u] < 0) return u;
-		return parents[u] = findSet(parents[u]);
-	}
+            visited[cur.no] = true;
+            result += cur.w;
 
-	static class Edge implements Comparable<Edge> {
-		int u, v, w;
-		public Edge(int u, int v, int w) {
-			this.u = u; this.v = v; this.w = w;
-		}
-		@Override
-		public int compareTo(Edge edge) {
-			return this.w - edge.w;
-		}
-	}
+            cnt++;
+            if (cnt == V) break;
+
+            for (Node n = adjList[cur.no]; n != null; n = n.next) {
+                if (visited[n.to]) continue;
+                pq.offer(new Vertex(n.to, n.w));
+            }
+        }
+        return result;
+    }
+
+    static class Node{
+        int to, w;
+        Node next;
+
+        public Node(int to, int w, Node next) {
+            this.to = to;
+            this.w = w;
+            this.next = next;
+        }
+    }
+
+    static class Vertex{
+        int no;
+        int w;
+        public Vertex(int no, int w) {
+            this.no = no;
+            this.w = w;
+        }
+
+    }
 }
