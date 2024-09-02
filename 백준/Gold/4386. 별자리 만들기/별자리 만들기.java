@@ -65,7 +65,7 @@ public class Main {
 
             for (int j = 0; j < V; j++) {
                 double distance = getDistance(adjMatrix[minVertex], adjMatrix[j]);
-                if (!visited[j] && minVertex != j && minEdges[j] > distance) {
+                if (!visited[j] && minEdges[j] > distance) {
                     minEdges[j] = distance;
                 }
             }
