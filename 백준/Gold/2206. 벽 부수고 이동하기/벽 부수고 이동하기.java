@@ -6,85 +6,81 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
- * 
+ * 메모리: 94,000 KB
+ * 시 간: 660 ms
  */
 public class Main {
-    static int[] dx = {1, -1, 0, 0};
-    static int[] dy = {0, 0, 1, -1};
-    static int N, M;
-    static int[][] map;
-
-    static class Node {
-        int x, y;
-        int cnt;
-
-        public Node(int x, int y, int cnt) {
-            this.x = x;
-            this.y = y;
-            this.cnt = cnt;
-        }
-    }
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
+    static int N, M, K;
+    static char[][] map;
+    static int minLength = Integer.MAX_VALUE;
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
+        st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
+        K = 1;
 
-        map = new int[N+1][M+1];
-        for (int i = 1; i <= N; i++) {
-            String str = br.readLine();
-            for (int j = 0; j < M; j++) {
-                map[i][j + 1] = str.charAt(j) - '0';
-            }
+        map = new char[N][];
+        for (int i = 0; i < N; i++) {
+            map[i] = br.readLine().toCharArray();
         }
-        bfs();
+
+        if (N == 1) {
+            System.out.println(1);
+            System.exit(0);
+        }
+
+        System.out.println(bfs());
     }
 
-    private static void bfs() {
-        Queue<Node> q = new ArrayDeque<>();
-        boolean[][][] visited = new boolean[N + 1][M + 1][2];
+    static int[] dx = {1, -1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
+    private static int bfs() {
+        int minPath = 1;
+        Queue<int[]> q = new ArrayDeque<>();
+        boolean[][][] visited = new boolean[K+1][N][M];
+        q.offer(new int[]{0, 0, 0});
+        visited[0][0][0] = true;
 
-        q.offer(new Node(1, 1, 0));
-        visited[1][1][0] = true;
-
-        int distance = 1;
         while (!q.isEmpty()) {
             int size = q.size();
-            while (size-- > 0) {
-                Node cur = q.poll();
-                int x = cur.x;
-                int y = cur.y;
-                int cnt = cur.cnt;
-
-                if (x == N && y == M) {
-                    System.out.println(distance);
-                    return;
-                }
+            minPath++;
+            while(size-- > 0) {
+                int[] n = q.poll();
+                int k = n[0], x = n[1], y = n[2];
 
                 for (int i = 0; i < 4; i++) {
                     int nx = x + dx[i];
                     int ny = y + dy[i];
 
-                    if (nx < 1 || nx > N || ny < 1 || ny > M) continue;
+                    if (nx < 0 || nx >= N || ny < 0 || ny >= M) continue;
+                    if (nx == N-1 && ny == M-1) return minPath;
 
-                    if (map[nx][ny] == 1) {
-                        if (cnt == 1) continue;
-                        if (visited[nx][ny][1]) continue;
-
-                        q.offer(new Node(nx, ny, cnt + 1));
-                        visited[nx][ny][cnt+1] = true;
+                    if (map[nx][ny] == '1') {
+                        if (k < K && !visited[k+1][nx][ny]) {
+                            visited[k+1][nx][ny] = true;
+                            q.offer(new int []{k+1, nx, ny});
+                        }
                     } else {
-                        if (visited[nx][ny][cnt]) continue;
-
-                        q.offer(new Node(nx, ny, cnt));
-                        visited[nx][ny][cnt] = true;
+                        if (!visited[k][nx][ny]) {
+                            visited[k][nx][ny] = true;
+                            q.offer(new int []{k, nx, ny});
+                        }
                     }
                 }
             }
-            distance++;
         }
-        System.out.println(-1);
+        return -1;
     }
 }
+/*
+6 4 1
+0100
+1110
+1000
+0000
+0111
+0000
+* */
