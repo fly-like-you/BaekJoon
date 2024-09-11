@@ -36,19 +36,12 @@ public class Main {
         while (start <= end) {
             if (canDrink(cur)) {
                 start = cur + 1;
-//                System.out.println("YES");
             } else {
                 end = cur - 1;
-//                System.out.println("NO");
             }
             cur = (start + end) / 2;
-//            System.out.println();
         }
-        if (canDrink(cur)) {
-            return cur;
-        } else {
-            return cur - 1;
-        }
+        return cur;
     }
 
     private static boolean canDrink(long drink) {
