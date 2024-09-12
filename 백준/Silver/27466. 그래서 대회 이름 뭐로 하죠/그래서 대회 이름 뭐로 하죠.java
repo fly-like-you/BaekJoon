@@ -1,3 +1,5 @@
+
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,18 +44,18 @@ public class Main {
             if (length > 2 && length < M) {
                 sb.append(str[i]);
                 length++;
-
             }
         }
         if (length != M) {
             System.out.println("NO");
         } else {
+            System.out.println("YES");
             System.out.println(sb.reverse());
         }
     }
 
     private static boolean 자음인가요(char chr) {
-        return !(chr == 'a' || chr == 'e' || chr == 'i' || chr == 'o' || chr == 'u');
+        return !(chr == 'A' || chr == 'E' || chr == 'I' || chr == 'O' || chr == 'U');
     }
 }
 
