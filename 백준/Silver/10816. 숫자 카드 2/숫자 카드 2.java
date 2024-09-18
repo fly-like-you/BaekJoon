@@ -29,16 +29,12 @@ public class Main {
         for (int i = 0; i < M; i++) {
             int target = Integer.parseInt(st.nextToken());
             // 만약 맵에 존재하면 해당
-            Integer t = map.get(target);
-            if (t != null) {
-                sb.append(t).append(" ");
-            } else {
-                int lb = lowerBound(target);
-                int ub = upperBound(target);
-                int cnt = ub - lb;
-                map.put(target, cnt);
-                sb.append(cnt).append(" ");
-            }
+
+            int lb = lowerBound(target);
+            int ub = upperBound(target);
+            int cnt = ub - lb;
+            sb.append(cnt).append(" ");
+
         }
 
         System.out.println(sb);
