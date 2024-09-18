@@ -20,50 +20,23 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         cards = new int[N];
         for (int i = 0; i < N; i++) {
-            cards[i] = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            Integer t = map.getOrDefault(v, 0);
+            map.put(v, ++t);
         }
-        Arrays.sort(cards);
 
         M = Integer.parseInt(br.readLine());
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < M; i++) {
-            int target = Integer.parseInt(st.nextToken());
-            // 만약 맵에 존재하면 해당
+            int v = Integer.parseInt(st.nextToken());
 
-            int lb = lowerBound(target);
-            int ub = upperBound(target);
-            int cnt = ub - lb;
-            sb.append(cnt).append(" ");
+            sb.append(map.getOrDefault(v, 0)).append(" ");
 
         }
 
         System.out.println(sb);
     }
 
-    private static int lowerBound(int key) {
-        int low = 0;
-        int high = N - 1;
-
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            if (cards[mid] < key) low = mid + 1;
-            else high = mid - 1;
-        }
-
-        return low;
-    }
-    private static int upperBound(int key) {
-        int low = 0;
-        int high = N - 1;
-
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            if (cards[mid] <= key) low = mid + 1;
-            else high = mid - 1;
-        }
-
-        return low;
-    }
 }
 /*
 10
