@@ -12,13 +12,7 @@ public class Main {
     static int[] piles;
     static int[] flags;
 
-
     public static void main(String[] args) throws IOException {
-        // 두 말뚝을 결정하기
-        // 말뚝에 대해서 현수막을 직접 걸어보기
-        // 말뚝 수 : 2,000, 깃대의 수: 40,000
-        // 완탐: 2,000 C 2 * 40,000
-        // 2개 고르고 나머지 이분탐색
         st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
@@ -41,6 +35,8 @@ public class Main {
         for (int i = 0; i < N; i++) {
             for (int j = i + 1; j < N; j++) {
                 int base = Math.abs(piles[i] - piles[j]);
+                if (base == 0) continue;
+                
                 double target = (double) R / base;
                 int lb = customBound(target);
                 if (lb >= 0) {
@@ -51,32 +47,23 @@ public class Main {
         if (maxSize == -1) {
             System.out.println(-1);
         } else {
-            System.out.printf("%.1f", maxSize);
-
+            System.out.printf("%.1f\n", maxSize);
         }
     }
 
     private static int customBound(double target) {
         int start = 0;
         int end = M - 1;
-        int maxIdx = -1;
 
         while (start <= end) {
             int mid = (end + start) / 2;
             if (flags[mid] <= target) {
                 start = mid + 1;
-                maxIdx = Math.max(maxIdx, mid);
             } else {
                 end = mid - 1;
             }
         }
 
-        return maxIdx;
+        return end;  // end가 target 이하의 값 중 최대 값의 인덱스를 가리킵니다.
     }
-
 }
-/*
-3 5 23
--5 0 5
-1 6 2 8 10
- */
