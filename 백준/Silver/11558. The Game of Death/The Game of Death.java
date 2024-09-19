@@ -36,17 +36,14 @@ public class Main {
         q.offer(0);
 
         while (!q.isEmpty()) {
-            int v = q.poll();
+            Integer v = q.poll();
 
-            if (v == N - 1) {
-                return visited[v]; // 마지막 노드에 도착하면 그 때의 거리 반환
-            }
+            if (v == N - 1) return visited[v];
 
             int next = graph[v];
-            if (visited[next] == -1) { // 아직 방문하지 않은 노드일 때
-                visited[next] = visited[v] + 1; // 현재까지의 이동 횟수 + 1
-                q.offer(next);
-            }
+            if (visited[next] != -1) continue;
+            visited[next] = visited[v] + 1;
+            q.offer(next);
         }
 
         return 0; // 도착할 수 없는 경우 0 반환
