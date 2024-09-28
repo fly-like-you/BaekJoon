@@ -6,12 +6,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Solution {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringBuilder sb = new StringBuilder();
     static int N, T;
-    static Set<String>[] words;
+    static TreeSet<String>[] set;
     // 길이가 짧은 순
     // 길이가 같다면 사전순
     public static void main(String[] args) throws IOException {
@@ -19,22 +20,18 @@ public class Solution {
         for (int t = 1; t <= T; t++) {
             sb.append("#").append(t).append("\n");
             N = Integer.parseInt(br.readLine());
-            words = new Set[51];
+            set = new TreeSet[51];
             for (int i = 0; i < 51; i++) {
-                words[i] = new HashSet<>();
+                set[i] = new TreeSet<>();
             }
             for (int i = 0; i < N; i++) {
                 String word = br.readLine();
-                words[word.length()].add(word);
+                set[word.length()].add(word);
             }
 
             for (int i = 1; i < 51; i++) {
-                ArrayList<String> l = new ArrayList<>(words[i]);
-
-                Collections.sort(l);
-                int size = words[i].size();
-                for (int j = 0; j < size; j++) {
-                    sb.append(l.get(j)).append("\n");
+                for (String w : set[i]) {
+                    sb.append(w).append("\n");
                 }
             }
 
