@@ -2,77 +2,56 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Main {
-    // 하루에 맥주 1병만 받을 수 있고, 이전에 받았던 종류의 맥주는 다시 받을 수 없습니다.
-    // 마시는 맥주 N개의 선호도 합이 M이상
-    // 매일마다 다른 맥주를 마셔야함
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
     static int N, M, K;
-    static int[][] drinks;
+    static int[][] beers;
 
     public static void main(String[] args) throws IOException {
         st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-        K = Integer.parseInt(st.nextToken());
-        drinks = new int[K][2];
-        // 0은 선호도 1은 도수
+        N = Integer.parseInt(st.nextToken());  // 선호도를 만족해야 하는 맥주의 개수
+        M = Integer.parseInt(st.nextToken());  // 필요한 최소 선호도
+        K = Integer.parseInt(st.nextToken());  // 총 맥주의 종류 수
+
+        beers = new int[K][2]; // [선호도, 가격]
         for (int i = 0; i < K; i++) {
             st = new StringTokenizer(br.readLine());
-            int favor = Integer.parseInt(st.nextToken());
-            int alcohol = Integer.parseInt(st.nextToken());
-            drinks[i][0] = favor;
-            drinks[i][1] = alcohol;
+            beers[i][0] = Integer.parseInt(st.nextToken());  // 선호도
+            beers[i][1] = Integer.parseInt(st.nextToken());  // 가격
         }
 
-        Arrays.sort(drinks, (d1, d2) -> d1[1] - d2[1]);
-        int i = binarySearch();
-        if (i == K) {
-            System.out.println(-1);
-        } else {
-            System.out.println(drinks[i][1]);
-        }
+        // 맥주를 가격을 기준으로 오름차순 정렬
+        Arrays.sort(beers, Comparator.comparingInt(b -> b[1]));
 
-    }
+        // 선호도를 관리할 우선순위 큐 (최소 힙)
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
 
-    public static int binarySearch() {
-        int lo = 0;
-        int hi = K - 1;
-        int minIdx = K;
-        while (lo <= hi) {
-            int mid = (lo + hi) / 2;
-            if (canDrink(mid) >= M) {
-                // 낮춰보기
-                hi = mid - 1;
-                minIdx = Math.min(minIdx, mid);
-            } else {
-                lo = mid + 1;
+        int favor = 0; // 선호도의 합
+        int answer = -1; // 답이 없으면 -1 출력
+
+        // 모든 맥주를 순차적으로 확인
+        for (int i = 0; i < K; i++) {
+            pq.add(beers[i][0]);  // 현재 맥주의 선호도를 추가
+            favor += beers[i][0]; // 선호도 합 계산
+
+            // 우선순위 큐의 크기가 N을 넘으면 가장 작은 선호도를 제거
+            if (pq.size() > N) {
+                favor -= pq.poll();
+            }
+
+            // N개의 맥주를 선택했고, 선호도의 합이 M 이상일 때
+            if (pq.size() == N && favor >= M) {
+                answer = beers[i][1]; // 현재 맥주의 가격이 가장 저렴한 가격이 됨
+                break;
             }
         }
-        return minIdx;
-    }
 
-    static PriorityQueue<int[]> pq = new PriorityQueue<>((d1, d2) -> d2[0] - d1[0]);
-    public static int canDrink(int idx) {
-        pq.clear();
-        // N = 마셔야하는 맥주의 수
-        // idx + 1 = 최대한 마실 수 있는 맥주 개수
-        if (idx + 1 < N) return 0;
-        int sum = 0;
-        // 선호도로 간 레벨보다 작은 것에 대해서 정렬
-        for (int i = 0; i <= idx; i++) {
-            pq.add(drinks[i]);
-        }
-        // N개 뽑고 합이 선호도 이상이라면 만족
-        for (int i = 0; i < N; i++) {
-            sum += pq.poll()[0];
-        }
-
-
-        return sum;
+        // 결과 출력
+        System.out.println(answer);
     }
 }
