@@ -14,44 +14,62 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());  // 선호도를 만족해야 하는 맥주의 개수
-        M = Integer.parseInt(st.nextToken());  // 필요한 최소 선호도
-        K = Integer.parseInt(st.nextToken());  // 총 맥주의 종류 수
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
 
-        beers = new int[K][2]; // [선호도, 가격]
+        beers = new int[K][2];
         for (int i = 0; i < K; i++) {
             st = new StringTokenizer(br.readLine());
-            beers[i][0] = Integer.parseInt(st.nextToken());  // 선호도
-            beers[i][1] = Integer.parseInt(st.nextToken());  // 가격
+            beers[i][0] = Integer.parseInt(st.nextToken());
+            beers[i][1] = Integer.parseInt(st.nextToken());
         }
-
-        // 맥주를 가격을 기준으로 오름차순 정렬
+        // 맥주를 간 수치를 기준으로 정렬하기
         Arrays.sort(beers, Comparator.comparingInt(b -> b[1]));
 
-        // 선호도를 관리할 우선순위 큐 (최소 힙)
+        // pq에 윈도우크기만큼(N) 넣기
         PriorityQueue<Integer> pq = new PriorityQueue<>();
 
-        int favor = 0; // 선호도의 합
-        int answer = -1; // 답이 없으면 -1 출력
-
-        // 모든 맥주를 순차적으로 확인
-        for (int i = 0; i < K; i++) {
-            pq.add(beers[i][0]);  // 현재 맥주의 선호도를 추가
-            favor += beers[i][0]; // 선호도 합 계산
-
-            // 우선순위 큐의 크기가 N을 넘으면 가장 작은 선호도를 제거
-            if (pq.size() > N) {
-                favor -= pq.poll();
-            }
-
-            // N개의 맥주를 선택했고, 선호도의 합이 M 이상일 때
-            if (pq.size() == N && favor >= M) {
-                answer = beers[i][1]; // 현재 맥주의 가격이 가장 저렴한 가격이 됨
+        // init
+        int end = N - 1;
+        int favor = 0;
+        for (int i = 0; i < N; i++) {
+            pq.add(beers[i][0]);
+            favor += beers[i][0];
+        }
+        int answer = -1;
+        // 윈도우를 움직이면서 선호도를 만족하는지 확인하기
+        while (true) {
+            if (favor >= M) {
+                answer = beers[end][1];
                 break;
             }
-        }
 
-        // 결과 출력
+            end++;
+            if (end >= K) break;
+            pq.add(beers[end][0]);
+            favor += beers[end][0];
+            favor -= pq.poll();
+
+        }
         System.out.println(answer);
+
     }
+
 }
+/*
+3 9 5
+2 5
+4 6
+3 3
+4 3
+1 4
+
+6 60 6
+10 1
+10 2
+10 3
+10 4
+10 5
+10 6
+ */
