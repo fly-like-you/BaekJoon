@@ -29,7 +29,7 @@ public class Main {
                     print(q);
                     return;
                 default:
-                    if (q.size() > N) continue;
+                    if (q.size() >= N) continue;
                     q.offer(task);
             }
         }
@@ -38,7 +38,10 @@ public class Main {
     private static void print(Queue<Integer> q) {
         Iterator<Integer> iterator = q.iterator();
         StringBuilder sb = new StringBuilder();
-
+        if (!iterator.hasNext()) {
+            System.out.println("empty");
+            return;
+        }
         while (iterator.hasNext()) {
             sb.append(iterator.next() + " ");
         }
