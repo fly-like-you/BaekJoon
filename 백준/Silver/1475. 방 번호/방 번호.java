@@ -15,6 +15,11 @@ public class Main {
     static private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static char[] room;
     static int[] nums;
+    /*
+    배울 수 있던 점
+    6과 9를 겸해서 사용할 수 있다는 점에서
+
+     */
     public static void main(String[] args) throws IOException {
         // 6 -> 9, 9 -> 6
         // 0, 1, 2, 3, 4, 5, 7, 8
@@ -34,7 +39,8 @@ public class Main {
             if (i == 6 || i == 9) continue;
             min = Math.max(nums[i], min);
         }
-        min = Math.max(min, (int)Math.ceil((nums[6] + nums[9]) / 2.0));
+        int sum = nums[6] + nums[9];
+        min = Math.max(min, sum / 2 + sum % 2);
         System.out.println(min);
     }
 }
